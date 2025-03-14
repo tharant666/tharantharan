@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paddy Detection</title>
+</head>
+<body>
+    <h1>Upload Image for Paddy Detection</h1>
+    <form action="/upload" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" accept="image/*">
+        <button type="submit">Upload and Run</button>
+    </form>
+
+    {% if filename %}
+        <h2>Processed Image:</h2>
+        <img src="{{ url_for('static', filename='uploads/' + filename) }}" alt="Processed Image">
+        <h3>Results:</h3>
+        <p>Total Paddy: {{ total_paddy }}</p>
+        <p>Green Paddy: {{ green_paddy }}</p>
+        <p>Green Paddy Percentage: {{ green_paddy_percentage }}%</p>
+    {% endif %}
+</body>
+</html>
