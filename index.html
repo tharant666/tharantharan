@@ -7,18 +7,67 @@
 </head>
 <body>
     <h1>Upload Image for Paddy Detection</h1>
-    <form action=" https://mycustomsubdomain.loca.lt/uplode" method="post" enctype="multipart/form-data">
-        <input type="file" name="file" accept="image/*">
+    <form id="uploadForm">
+        <input type="file" id="fileInput" accept="image/*">
         <button type="submit">Upload and Run</button>
     </form>
 
-    {% if filename %}
-        <h2>Processed Image:</h2>
-        <img src="{{ url_for('static', filename='uploads/' + filename) }}" alt="Processed Image">
-        <h3>Results:</h3>
-        <p>Total Paddy: {{ total_paddy }}</p>
-        <p>Green Paddy: {{ green_paddy }}</p>
-        <p>Green Paddy Percentage: {{ green_paddy_percentage }}%</p>
-    {% endif %}
+    <h2>Processed Image:</h2>
+    <img id="processedImage" src="" alt="Processed Image">
+    <h3>Results:</h3>
+    <p>Total Paddy: <span id="totalPaddy"></span></p>
+    <p>Green Paddy: <span id="greenPaddy"></span></p>
+    <p>Green Paddy Percentage: <span id="greenPaddyPercentage"></span>%</p>
+
+    <script>
+        document.getElementById("uploadForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
+
+            let fileInput = document.getElementById("fileInput").files[0];
+            if (!fileInput) {
+                alert("Please select an image!");
+                return;
+            }
+
+            let formData = new FormData();
+            formData.append("file", fileInput);
+
+            let backendUrl = "https://wet-seahorse-37.loca.lt"; // Change this to your actual backend URL
+
+            // Step 1: Upload the image
+            let uploadResponse = await fetch(`${backendUrl}/upload`, {
+                method: "POST",
+                body: formData
+            });
+
+            let uploadResult = await uploadResponse.json();
+            if (uploadResult.error) {
+                alert(uploadResult.error);
+                return;
+            }
+
+            let filename = uploadResult.filename;
+
+            // Step 2: Process the image
+            let processResponse = await fetch(`${backendUrl}/process`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ filename: filename })
+            });
+
+            let processResult = await processResponse.json();
+
+            if (processResult.error) {
+                alert(processResult.error);
+                return;
+            }
+
+            // Step 3: Display results
+            document.getElementById("processedImage").src = `${backendUrl}/static/uploads/${processResult.processed_image}`;
+            document.getElementById("totalPaddy").textContent = processResult.total_paddy;
+            document.getElementById("greenPaddy").textContent = processResult.green_paddy;
+            document.getElementById("greenPaddyPercentage").textContent = processResult.green_paddy_percentage.toFixed(2);
+        });
+    </script>
 </body>
 </html>
