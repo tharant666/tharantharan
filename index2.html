@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Green Paddy Detector</title>
+    <link rel="shortcut icon" href="/home/tharant666/paddy counting/Untitled design_20250226_113713_0000.png" type="image/x-icon">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        h1 {
+            color: #3a3a51;
+            text-align: center;
+            font-family: 'Arial', sans-serif;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            margin: 20px 0;
+            font-size: 28px;
+            position: absolute;
+            top: 20px;
+        }
+
+        #uploadForm {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 400px;
+            transition: transform 0.3s ease-in-out;
+            margin-top: 80px; /* Adjust margin to avoid overlap with h1 */
+        }
+
+        #uploadForm:hover {
+            transform: translateY(-5px);
+        }
+
+        /* Style the file input */
+        #imageInput {
+            padding: 15px;
+            border: 2px dashed #007bff;
+            background: #f8f9fa;
+            border-radius: 10px;
+            width: 100%;
+            text-align: center;
+            cursor: pointer;
+            font-size: 14px;
+            color: #333;
+            transition: background 0.3s ease-in-out, border-color 0.3s ease-in-out;
+        }
+
+        #imageInput:hover {
+            background: #e9ecef;
+            border-color: #0056b3;
+        }
+
+        /* Hide the default file input */
+        #imageInput::-webkit-file-upload-button {
+            visibility: hidden;
+        }
+
+        #imageInput::before {
+            content: "Choose an image...";
+            display: inline-block;
+            background: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease-in-out;
+        }
+
+        #imageInput:hover::before {
+            background: #0056b3;
+        }
+
+        /* Style the submit button */
+        button {
+            margin-top: 20px;
+            padding: 12px 25px;
+            font-size: 16px;
+            color: white;
+            background: #28a745;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s ease-in-out, transform 0.3s ease-in-out;
+            width: 100%;
+        }
+
+        button:hover {
+            background: #218838;
+            transform: scale(1.05);
+        }
+
+        /* Progress and Results Section */
+        .progress-section {
+            margin-top: 20px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .progress-section h3 {
+            color: #3a3a51;
+            margin: 10px 0;
+            font-size: 18px;
+        }
+
+        #uploadProgress, #processProgress {
+            width: 100%;
+            height: 20px;
+            background-color: #ccc;
+            display: none;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background-color: green;
+            text-align: center;
+            color: white;
+            line-height: 20px;
+            transition: width 0.3s ease-in-out;
+        }
+
+        /* Result Text Styling */
+        #resultText {
+            color: #3a3a51;
+            margin-top: 20px;
+            font-size: 18px;
+            text-align: center;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 500px;
+        }
+
+        #resultText span {
+            font-weight: bold;
+            color: #28a745; /* Green color for emphasis */
+        }
+
+        /* Processed Image Styling */
+        #processedImage {
+            max-width: 100%;
+            display: none;
+            margin-top: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+        }
+
+        /* Add a subtle animation to the form */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        #uploadForm {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        /* Media Queries for Responsive Design */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 24px;
+                top: 10px;
+            }
+
+            #uploadForm {
+                padding: 20px;
+                width: 90%;
+            }
+
+            #imageInput {
+                font-size: 12px;
+            }
+
+            button {
+                font-size: 14px;
+                padding: 10px 20px;
+            }
+
+            .progress-section h3 {
+                font-size: 16px;
+            }
+
+            #resultText {
+                font-size: 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 20px;
+                top: 5px;
+            }
+
+            #uploadForm {
+                padding: 15px;
+                width: 95%;
+            }
+
+            #imageInput {
+                font-size: 10px;
+            }
+
+            button {
+                font-size: 12px;
+                padding: 8px 16px;
+            }
+
+            .progress-section h3 {
+                font-size: 14px;
+            }
+
+            #resultText {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>UPLOAD AN IMAGE</h1>
+    <form id="uploadForm">
+        <input type="file" id="imageInput" accept="image/*" required>
+        <button type="submit">Upload</button>
+    </form>
+
+    <div class="progress-section">
+        <h3>Upload Progress:</h3>
+        <div id="uploadProgress"><div class="progress-bar" id="uploadBar">0%</div></div>
+        
+        <h3>Processing Progress:</h3>
+        <div id="processProgress"><div class="progress-bar" id="processBar">0%</div></div>
+    </div>
+
+    <div id="resultText"></div>
+    <img id="processedImage" alt="Processed Image">
+
+    <script>
+        const NGROK_URL = " https://a974-34-125-77-203.ngrok-free.app";  // Replace with your ngrok URL
+
+        document.getElementById("uploadForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
+            
+            const fileInput = document.getElementById("imageInput");
+            if (fileInput.files.length === 0) {
+                alert("Please select an image to upload.");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("image", fileInput.files[0]);
+
+            // Show Upload Progress Bar
+            document.getElementById("uploadProgress").style.display = "block";
+            const uploadBar = document.getElementById("uploadBar");
+
+            // Show Processing Progress Bar
+            document.getElementById("processProgress").style.display = "block";
+            const processBar = document.getElementById("processBar");
+
+            try {
+                // Track upload progress
+                const xhr = new XMLHttpRequest();
+                xhr.open("POST", `${NGROK_URL}/upload`);
+                xhr.upload.addEventListener("progress", function(event) {
+                    if (event.lengthComputable) {
+                        const percent = (event.loaded / event.total) * 100;
+                        uploadBar.style.width = percent + "%";
+                        uploadBar.innerText = Math.round(percent) + "%";
+                    }
+                });
+
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        const data = JSON.parse(xhr.responseText);
+
+                        // Simulate processing progress
+                        let processProgress = 0;
+                        const processInterval = setInterval(() => {
+                            processProgress += 10;
+                            processBar.style.width = processProgress + "%";
+                            processBar.innerText = processProgress + "%";
+                            if (processProgress >= 100) {
+                                clearInterval(processInterval);
+
+                                // Display results
+                                document.getElementById("resultText").innerHTML = 
+                                    `<span>Good Paddy:</span> ${data.good_paddy_count}<br>
+                                     <span>Green Paddy:</span> ${data.green_paddy_count}<br>
+                                     <span>Green Paddy Percentage:</span> ${data.green_paddy_percentage}%`;
+
+                                const processedImage = document.getElementById("processedImage");
+                                processedImage.src = data.processed_image;  // Use the base64-encoded image
+                                processedImage.style.display = "block";
+                            }
+                        }, 200);
+                    } else {
+                        document.getElementById("resultText").innerText = "Error uploading image.";
+                    }
+                };
+
+                xhr.onerror = function() {
+                    document.getElementById("resultText").innerText = "Error uploading image.";
+                };
+
+                xhr.send(formData);
+            } catch (error) {
+                document.getElementById("resultText").innerText = "Error uploading image.";
+                console.error(error);
+            }
+        });
+    </script>
+</body>
+</html>
